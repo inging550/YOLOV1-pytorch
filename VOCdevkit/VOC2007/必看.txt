@@ -1,0 +1,2 @@
+Annotations文件夹放入xml文件
+JPEGImages文件夹放入jpg文件
