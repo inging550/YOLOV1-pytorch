@@ -79,6 +79,10 @@ class yoloLoss(nn.Module):
         # compute contain obj loss
         coo_response_mask = torch.cuda.ByteTensor(box_target.size()).bool()  # ByteTensor 构建Byte类型的tensor元素全为0
         coo_response_mask.zero_()  # 全部元素置False                            bool:将其元素转变为布尔值
+
+        no_coo_response_mask = torch.cuda.ByteTensor(box_target.size()).bool()  # ByteTensor 构建Byte类型的tensor元素全为0
+        no_coo_response_mask.zero_()  # 全部元素置False                            bool:将其元素转变为布尔值
+
         box_target_iou = torch.zeros(box_target.size()).cuda()
 
         # box1 = 预测框  box2 = ground truth
@@ -95,6 +99,7 @@ class yoloLoss(nn.Module):
             max_iou, max_index = iou.max(0)
             max_index = max_index.data.cuda()
             coo_response_mask[i + max_index] = 1  # IOU最大的bbox
+            no_coo_response_mask[i + 1 - max_index] = 1  # 舍去的bbox
             # confidence score = predicted box 与 the ground truth 的 IOU
             box_target_iou[i + max_index, torch.LongTensor([4]).cuda()] = max_iou.data.cuda()
 
@@ -102,11 +107,17 @@ class yoloLoss(nn.Module):
         # 置信度误差（含物体的grid ceil的两个bbox与ground truth的IOU较大的一方）
         box_pred_response = box_pred[coo_response_mask].view(-1, 5)
         box_target_response_iou = box_target_iou[coo_response_mask].view(-1, 5)
+        # IOU较小的一方
+        no_box_pred_response = box_pred[no_coo_response_mask].view(-1, 5)
+        no_box_target_response_iou = box_target_iou[no_coo_response_mask].view(-1, 5)
+        no_box_target_response_iou[:, 4] = 0  # 保险起见置0（其实原本就是0）
+
         box_target_response = box_target[coo_response_mask].view(-1, 5)
 
-        # 含物体grid ceil置信度损失
+        # 含物体grid ceil中IOU较大的bbox置信度损失
         contain_loss = F.mse_loss(box_pred_response[:, 4], box_target_response_iou[:, 4], size_average=False)
-
+        # 含物体grid ceil中舍去的bbox损失
+        no_contain_loss = F.mse_loss(no_box_pred_response[:, 4], no_box_target_response_iou[:, 4], size_average=False)
         # bbox坐标损失
         loc_loss = F.mse_loss(box_pred_response[:, :2], box_target_response[:, :2], size_average=False) + F.mse_loss(
             torch.sqrt(box_pred_response[:, 2:4]), torch.sqrt(box_target_response[:, 2:4]), size_average=False)
@@ -114,4 +125,4 @@ class yoloLoss(nn.Module):
         # 类别损失
         class_loss = F.mse_loss(class_pred, class_target, size_average=False)
 
-        return (self.l_coord * loc_loss + contain_loss + self.l_noobj * nooobj_loss + class_loss) / N
+        return (self.l_coord * loc_loss + contain_loss + self.l_noobj * (nooobj_loss + no_contain_loss) + class_loss) / N
