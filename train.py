@@ -20,9 +20,9 @@ test_dataset = yoloDataset(img_root=file_root, list_file='voctest.txt', train=Fa
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
 print('the dataset has %d images' % (len(train_dataset)))
 
-net = resnet50()  # 模型结构 无权重参数
+net = resnet50()  # 自己定义的网络
 net = net.cuda()
-resnet = models.resnet50(pretrained=True)  # 导入权重参数
+resnet = models.resnet50(pretrained=True)  # torchvison库中的网络
 new_state_dict = resnet.state_dict()
 op = net.state_dict()
 
@@ -98,4 +98,5 @@ for epoch in range(num_epochs):
     best_test_loss = validation_loss
     print('get best test loss %.5f' % best_test_loss)
     torch.save(net.state_dict(), 'yolo.pth')
+
 
