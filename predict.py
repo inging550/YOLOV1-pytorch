@@ -5,9 +5,9 @@ from torchvision.transforms import ToTensor
 from new_resnet import resnet50
 
 
-img_root = "***.jpg"   # 需要预测的图片路径
+img_root = "***.jpg"   # 需要预测的图片路径 （自己填入）
 model = resnet50()
-model.load_state_dict(torch.load("***.pth"))   # 导入参数
+model.load_state_dict(torch.load("***.pth"))   # 导入参数  （自己填入）
 model.eval()
 confident = 0.2
 iou_con = 0.4
@@ -17,7 +17,7 @@ VOC_CLASSES = (
     'bottle', 'bus', 'car', 'cat', 'chair',
     'cow', 'diningtable', 'dog', 'horse',
     'motorbike', 'person', 'pottedplant',
-    'sheep', 'sofa', 'train', 'tvmonitor')  # 将自己的名称输入
+    'sheep', 'sofa', 'train', 'tvmonitor')  # 将自己的名称输入 （使用自己的数据集时需要更改）
 CLASS_NUM = len(VOC_CLASSES)   # 20
 
 
