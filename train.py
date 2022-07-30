@@ -10,9 +10,9 @@ import torch
 
 device = 'cuda'
 file_root = 'VOCdevkit/VOC2007/JPEGImages/'
-batch_size = 2
+batch_size = 2   # 若显存较大可以调大此参数 4，8，16，32等等
 learning_rate = 0.001
-num_epochs = 30
+num_epochs = 100
 
 train_dataset = yoloDataset(img_root=file_root, list_file='voctrain.txt', train=True, transform=[transforms.ToTensor()])
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
@@ -63,9 +63,9 @@ optimizer = torch.optim.SGD(    # 定义优化器  “随机梯度下降”
 
 for epoch in range(num_epochs):
     net.train()
-    if epoch == 30:
+    if epoch == 60:
         learning_rate = 0.0001
-    if epoch == 40:
+    if epoch == 80:
         learning_rate = 0.00001
     for param_group in optimizer.param_groups:   # 其中的元素是2个字典；optimizer.param_groups[0]： 长度为6的字典，包括[‘amsgrad’, ‘params’, ‘lr’, ‘betas’, ‘weight_decay’, ‘eps’]这6个参数；
                                                 # optimizer.param_groups[1]： 好像是表示优化器的状态的一个字典；
