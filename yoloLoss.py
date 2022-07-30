@@ -5,7 +5,7 @@ from torch.autograd import Variable
 import warnings
 
 warnings.filterwarnings('ignore')  # 忽略警告消息
-CLASS_NUM = 8    # （使用自己的数据集时需要更改）
+CLASS_NUM = 20    # （使用自己的数据集时需要更改）
 
 class yoloLoss(nn.Module):
     def __init__(self, S, B, l_coord, l_noobj):
