@@ -4,7 +4,7 @@ from torch import nn
 from torch.utils import model_zoo
 
 model_urls = {'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth'}
-CLASS_NUM = 8
+CLASS_NUM = 20   # 使用其他训练集需要更改
 
 class Bottleneck(nn.Module):  # 定义基本块
     def __init__(self, in_channel, out_channel, stride, downsample):
