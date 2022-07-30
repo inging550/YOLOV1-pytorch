@@ -5,15 +5,20 @@ from torchvision.transforms import ToTensor
 from new_resnet import resnet50
 
 
-img_root = "VOCdevkit/VOC2007/JPEGImages/cipian11.jpg"   # 需要预测的图片路径
+img_root = "***.jpg"   # 需要预测的图片路径
 model = resnet50()
-model.load_state_dict(torch.load("1yolo.pth"))   # 导入参数
+model.load_state_dict(torch.load("***.pth"))   # 导入参数
 model.eval()
 confident = 0.2
 iou_con = 0.4
 
-VOC_CLASSES = ('hlb', 'blb', 'cp', 'dc', 'kqs', 'st', 'td', 'ylg')  # 将自己的名称输入
-CLASS_NUM = len(VOC_CLASSES)   # 8
+VOC_CLASSES = (
+    'aeroplane', 'bicycle', 'bird', 'boat',
+    'bottle', 'bus', 'car', 'cat', 'chair',
+    'cow', 'diningtable', 'dog', 'horse',
+    'motorbike', 'person', 'pottedplant',
+    'sheep', 'sofa', 'train', 'tvmonitor')  # 将自己的名称输入
+CLASS_NUM = len(VOC_CLASSES)   # 20
 
 
 # target 7*7*30  值域为0-1
