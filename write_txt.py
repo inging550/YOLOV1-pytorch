@@ -7,7 +7,7 @@ VOC_CLASSES = (  # 定义所有的类名
     'bottle', 'bus', 'car', 'cat', 'chair',
     'cow', 'diningtable', 'dog', 'horse',
     'motorbike', 'person', 'pottedplant',
-    'sheep', 'sofa', 'train', 'tvmonitor')
+    'sheep', 'sofa', 'train', 'tvmonitor')   # 使用其他训练集需要更改
 
 # 定义一些参数
 train_set = open('voctrain.txt', 'w')
