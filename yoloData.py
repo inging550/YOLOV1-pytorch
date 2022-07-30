@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import ToTensor
 from PIL import Image
 
-CLASS_NUM = 8  # 使用其他训练集需要更改
+CLASS_NUM = 20  # 使用其他训练集需要更改
 
 
 class yoloDataset(Dataset):
