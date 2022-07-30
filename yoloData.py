@@ -6,6 +6,9 @@ import random
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import ToTensor
+from PIL import Image
+
+CLASS_NUM = 8  # 使用其他训练集需要更改
 
 
 class yoloDataset(Dataset):
@@ -22,7 +25,7 @@ class yoloDataset(Dataset):
 
         self.S = 7   # YOLOV1
         self.B = 2   # 相关
-        self.C = 20  # 参数
+        self.C = CLASS_NUM  # 参数
         self.mean = (123, 117, 104)  # RGB
         file_txt = open(list_file)
         lines = file_txt.readlines()   # 读取txt文件每一行
@@ -37,7 +40,7 @@ class yoloDataset(Dataset):
                 y = float(splited[2 + 5 * i])
                 x2 = float(splited[3 + 5 * i])
                 y2 = float(splited[4 + 5 * i])
-                c = splited[5 + 5 * i]  # 代表物体的类别，即是20种物体里面的哪一种
+                c = splited[5 + 5 * i]  # 代表物体的类别，即是20种物体里面的哪一种  值域 0-19
                 box.append([x, y, x2, y2])
                 label.append(int(c))
             self.boxes.append(torch.Tensor(box))
@@ -73,9 +76,21 @@ class yoloDataset(Dataset):
     def __len__(self):
         return self.num_samples
 
-    def encoder(self, boxes, labels):  # 输入的box为归一化形式(X1,X2,Y1,Y2) , 输出ground truth  (7*7)
+    # def letterbox_image(self, image, size):
+    #     # 对图片进行resize，使图片不失真。在空缺的地方进行padding
+    #     iw, ih = image.size
+    #     scale = min(size / iw, size / ih)
+    #     nw = int(iw * scale)
+    #     nh = int(ih * scale)
+    #
+    #     image = image.resize((nw, nh), Image.BICUBIC)
+    #     new_image = Image.new('RGB', size, (128, 128, 128))
+    #     new_image.paste(image, ((size - nw) // 2, (size - nh) // 2))
+    #     return new_image
+
+    def encoder(self, boxes, labels):  # 输入的box为归一化形式(X1,Y1,X2,Y2) , 输出ground truth  (7*7)
         grid_num = 7
-        target = torch.zeros((grid_num, grid_num, 30))
+        target = torch.zeros((grid_num, grid_num, int(CLASS_NUM + 10)))    # 7*7*30
         cell_size = 1. / grid_num  # 1/7
         wh = boxes[:, 2:] - boxes[:, :2] # wh = [w, h]  1*1
 
@@ -88,7 +103,8 @@ class yoloDataset(Dataset):
             target[int(ij[1]), int(ij[0]), 4] = 1
             # 第二个框的置信度
             target[int(ij[1]), int(ij[0]), 9] = 1
-            target[int(ij[1]), int(ij[0]), int(labels[i]) + 9] = 1  # 对应类别的概率设置为1
+
+            target[int(ij[1]), int(ij[0]), int(labels[i]) + 10] = 1  # 20个类别对应处的概率设置为1
 
             xy = ij * cell_size  # 归一化左上坐标  （1*1）
 
@@ -267,7 +283,7 @@ class yoloDataset(Dataset):
             im = im.clip(min=0, max=255).astype(np.uint8)
         return im
 
-#
+
 # def main():
 #     file_root = 'VOCdevkit/VOC2007/JPEGImages/'
 #     train_dataset = yoloDataset(
@@ -285,8 +301,8 @@ class yoloDataset(Dataset):
 #     train_iter = iter(train_loader)
 #     for i in range(100):
 #         img, target = next(train_iter)
-#         # print(img.shape)
-
+#         print(img.shape)
+#
 #
 # if __name__ == '__main__':
 #     main()
