@@ -5,7 +5,7 @@ from torch.autograd import Variable
 import warnings
 
 warnings.filterwarnings('ignore')  # 忽略警告消息
-
+CLASS_NUM = 8    # （使用自己的数据集时需要更改）
 
 class yoloLoss(nn.Module):
     def __init__(self, S, B, l_coord, l_noobj):
@@ -44,7 +44,7 @@ class yoloLoss(nn.Module):
         area2 = area2.unsqueeze(0).expand_as(inter)  # [M,] -> [1,M] -> [N,M]
 
         iou = inter / (area1 + area2 - inter)
-        return iou
+        return iou  # [2,1]
 
     def forward(self, pred_tensor, target_tensor):
         '''
@@ -57,17 +57,17 @@ class yoloLoss(nn.Module):
         coo_mask = coo_mask.unsqueeze(-1).expand_as(target_tensor)  # 得到含物体的坐标等信息,复制粘贴 batchsize*7*7*30
         noo_mask = noo_mask.unsqueeze(-1).expand_as(target_tensor)  # 得到不含物体的坐标等信息 batchsize*7*7*30
 
-        coo_pred = pred_tensor[coo_mask].view(-1, 30)  # view类似于reshape
+        coo_pred = pred_tensor[coo_mask].view(-1, int(CLASS_NUM + 10))  # view类似于reshape
         box_pred = coo_pred[:, :10].contiguous().view(-1, 5)  # 塑造成X行5列（-1表示自动计算），一个box包含5个值
         class_pred = coo_pred[:, 10:]  # [n_coord, 20]
 
-        coo_target = target_tensor[coo_mask].view(-1, 30)
+        coo_target = target_tensor[coo_mask].view(-1, int(CLASS_NUM + 10))
         box_target = coo_target[:, :10].contiguous().view(-1, 5)
         class_target = coo_target[:, 10:]
 
         # 不包含物体grid ceil的置信度损失
-        noo_pred = pred_tensor[noo_mask].view(-1, 30)
-        noo_target = target_tensor[noo_mask].view(-1, 30)
+        noo_pred = pred_tensor[noo_mask].view(-1, int(CLASS_NUM + 10))
+        noo_target = target_tensor[noo_mask].view(-1, int(CLASS_NUM + 10))
         noo_pred_mask = torch.cuda.ByteTensor(noo_pred.size()).bool()
         noo_pred_mask.zero_()
         noo_pred_mask[:, 4] = 1
