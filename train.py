@@ -1,6 +1,5 @@
 from yoloData import yoloDataset
 from yoloLoss import yoloLoss
-# from resnet50 import resnet50
 from new_resnet import resnet50
 from torchvision import models
 import torchvision.transforms as transforms
