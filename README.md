@@ -26,9 +26,14 @@ VOC2007数据集下载地址：
 
 5、运行write_txt.py生成训练以及测试需要用到的文本文件
 
-6、3、运行train.py开始训练
+6、运行train.py开始训练
 
 补充：
 1、yolov1需要的输入与输出与resnet50不一致，所以此网络结构与原本的resnet50并不完全相同。
 
-3、运行train.py
+2、使用VOC2007进行训练需要较大的eppoch大概200左右，若要使用其他数据集进行训练这里给出了个人制作的数据集下载链接在下方
+
+链接：https://pan.baidu.com/s/1tPUhYslsbAMCZxrCJ-GU2Q 
+
+提取码：1234
+
