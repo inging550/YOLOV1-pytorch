@@ -41,20 +41,25 @@ class Pred():
         Result = self.model(img)   # 1*7*7*30
         bbox = self.Decode(Result)
         bboxes = self.NMS(bbox)    # n*6   bbox坐标是基于7*7网格需要将其转换成448
+        if len(bboxes) == 0:
+            print("未识别到任何物体")
+            print("尝试减小 confident 以及 iou_con")
+            print("也可能是由于训练不充分，可在训练时将epoch增大")        
         for i in range(0, len(bboxes)):    # bbox坐标将其转换为原图像的分辨率
             bboxes[i][0] = bboxes[i][0] * 64
             bboxes[i][1] = bboxes[i][1] * 64
             bboxes[i][2] = bboxes[i][2] * 64
             bboxes[i][3] = bboxes[i][3] * 64
 
-        x1 = bboxes[0][0].item()    # 后面加item()是因为画框时输入的数据不可一味tensor类型
-        x2 = bboxes[0][1].item()
-        y1 = bboxes[0][2].item()
-        y2 = bboxes[0][3].item()
-        class_name = bboxes[0][5].item()
-        print(x1, x2, y1, y2, VOC_CLASSES[int(class_name)])
+            x1 = bboxes[i][0].item()    # 后面加item()是因为画框时输入的数据不可一味tensor类型
+            x2 = bboxes[i][1].item()
+            y1 = bboxes[i][2].item()
+            y2 = bboxes[i][3].item()
+            class_name = bboxes[i][5].item()
+            print(x1, x2, y1, y2, VOC_CLASSES[int(class_name)])
 
-        cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (144, 144, 255))   # 画框
+            cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (144, 144, 255))   # 画框
+
         cv2.imshow('img', image)
         cv2.waitKey(0)
 
