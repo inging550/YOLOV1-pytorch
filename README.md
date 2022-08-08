@@ -3,10 +3,14 @@
 
 主干网络替换为了改进的ResNet50，对应博客地址https://blog.csdn.net/ing100/article/details/125155065
 
+------------------------------------
+
 更新：
 
 2022.8.9 ---- predict.py  部分bug修复
 
+
+------------------------------------
 
 VOC2007数据集下载地址：
 链接：https://pan.baidu.com/s/1aB1rXpKlWlEd4WFpBAmzWA 
