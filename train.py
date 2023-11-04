@@ -85,7 +85,7 @@ for epoch in range(num_epochs):
         if (i + 1) % 5 == 0:
             print('Epoch [%d/%d], Iter [%d/%d] Loss: %.4f, average_loss: %.4f' % (epoch +1, num_epochs,
                                                                                  i + 1, len(train_loader), loss.item(), total_loss / (i + 1)))
-    validation_loss = 0.0
+    validation_loss = 20.0
     net.eval()
     for i, (images, target) in enumerate(test_loader):  # 导入dataloader 说明开始训练了  enumerate 建立一个迭代序列
         images, target = images.cuda(), target.cuda()
